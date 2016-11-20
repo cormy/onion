@@ -1,0 +1,49 @@
+{
+    "name": "cormy/onion",
+    "type": "library",
+    "description": "Onion style PSR-7 middleware stack using generators",
+    "license": "MIT",
+    "keywords": ["onion", "middleware", "stack", "psr", "psr-7", "http", "http-message", "request", "response", "cormy"],
+    "authors": [
+        {
+            "name": "Michael Mayer",
+            "email": "michael@schnittstabil.de"
+        }
+    ],
+    "autoload": {
+        "psr-4": { "Cormy\\Server\\": "src" }
+    },
+    "autoload-dev": {
+        "psr-4": { "Cormy\\Server\\": "tests" }
+    },
+    "require": {
+        "php": ">=7",
+        "psr/http-message": "^1.0",
+        "cormy/server-middleware": "^0.1.0",
+        "cormy/server-request-handler": "^0.1.0"
+    },
+    "require-dev": {
+        "sugared-rim/phpunit": "^2.0",
+        "vladahejda/phpunit-assert-exception": "^1.0",
+        "zendframework/zend-diactoros": "^1.3"
+    },
+    "scripts": {
+        "clean": "rm -rf build/",
+        "doc": [
+            "sugared-sami",
+            "phpmetrics --report-html build/phpmetrics/index.html src/"
+        ],
+        "lint": [
+            "sugared-rim-cs"
+        ],
+        "test": [
+            "tests/usage.php",
+            "sugared-rim-phpunit",
+            "composer lint"
+        ],
+        "travis": [
+            "tests/usage.php",
+            "sugared-rim-phpunit"
+        ]
+    }
+}
