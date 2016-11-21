@@ -22,7 +22,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Zend\Diactoros\Response;
 use Zend\Diactoros\ServerRequest;
 
-// create the innermost request handler
+// create the core of the onion, i.e. the innermost request handler
 $core = function (ServerRequestInterface $request):ResponseInterface {
     return new Response();
 };
