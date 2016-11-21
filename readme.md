@@ -27,7 +27,7 @@ $core = function (ServerRequestInterface $request):ResponseInterface {
     return new Response();
 };
 
-// create some middlewares
+// create some scales (aka middlewares) to wrap around the core
 $scales = [
     function (ServerRequestInterface $request):Generator {
         // delegate $request to the next request handler, i.e. $core
@@ -49,10 +49,10 @@ $scales = [
     },
 ];
 
-// create the onion style stack
+// create an onion style middleware stack
 $middlewareStack = new Onion($core, ...$scales);
 
-// and dispatch it
+// and process an incoming server request
 $response = $middlewareStack(new ServerRequest());
 ```
 
