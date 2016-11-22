@@ -62,6 +62,7 @@ class Onion implements RequestHandlerInterface
 
         while ($current->valid()) {
             $nextRequest = $current->current();
+
             try {
                 $nextResponse = $this->processMiddleware($nextIndex, $nextRequest);
                 $current->send($nextResponse);
