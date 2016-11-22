@@ -2,7 +2,7 @@
 
 [![SensioLabsInsight](https://insight.sensiolabs.com/projects/47e283f3-2eaf-4816-b75a-558dd0802bdd/big.png)](https://insight.sensiolabs.com/projects/47e283f3-2eaf-4816-b75a-558dd0802bdd)
 
-> Onion style [PSR-7](http://www.php-fig.org/psr/psr-7) **middleware stack** using generators
+> :tulip: Onion style [PSR-7](http://www.php-fig.org/psr/psr-7) **middleware stack** using generators
 
 
 ## Install
