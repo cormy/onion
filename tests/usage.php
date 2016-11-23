@@ -5,44 +5,36 @@ namespace Cormy;
 
 require __DIR__.'/../vendor/autoload.php';
 
-use Generator;
 use Cormy\Server\Onion;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Zend\Diactoros\Response;
-use Zend\Diactoros\ServerRequest;
 
-// create the innermost request handler
+// create the core of the onion, i.e. the innermost request handler
 $core = function (ServerRequestInterface $request):ResponseInterface {
-    return new Response();
+    return new \Zend\Diactoros\Response();
 };
 
-// create your middlewares
-$scales = [
-    function (ServerRequestInterface $request):Generator {
-        // delegate $request to the next request handler, i.e. $core
-        $response = yield $request;
+// create some scales (aka middlewares) to wrap around the core
+$scales = [];
 
-        // mofify the response
-        $response = $response->withHeader('content-type', 'application/json; charset=utf-8');
+$scales[] = function (ServerRequestInterface $request):\Generator {
+    // delegate $request to the next request handler, i.e. $core
+    $response = (yield $request);
 
-        return $response;
-    },
-    function (ServerRequestInterface $request):Generator {
-        // delegate $request to the next request handler, i.e. the middleware right above
-        $response = yield $request;
+    return $response->withHeader('content-type', 'application/json; charset=utf-8');
+};
 
-        // mofify the response
-        $response = $response->withHeader('X-PoweredBy', 'Unicorns');
+$scales[] = function (ServerRequestInterface $request):\Generator {
+    // delegate $request to the next request handler, i.e. the middleware right above
+    $response = (yield $request);
 
-        return $response;
-    },
-];
+    return $response->withHeader('X-PoweredBy', 'Unicorns');
+};
 
-// create the onion style stack
+// create an onion style middleware stack
 $middlewareStack = new Onion($core, ...$scales);
 
-// and dispatch it
-$response = $middlewareStack(new ServerRequest());
+// and process an incoming server request
+$response = $middlewareStack(new \Zend\Diactoros\ServerRequest());
 
 exit($response->getHeader('X-PoweredBy')[0] === 'Unicorns' ? 0 : 1);

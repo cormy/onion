@@ -15,45 +15,37 @@ composer require cormy/onion
 ## Usage
 
 ```php
-use Generator;
 use Cormy\Server\Onion;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Zend\Diactoros\Response;
-use Zend\Diactoros\ServerRequest;
 
 // create the core of the onion, i.e. the innermost request handler
 $core = function (ServerRequestInterface $request):ResponseInterface {
-    return new Response();
+    return new \Zend\Diactoros\Response();
 };
 
 // create some scales (aka middlewares) to wrap around the core
-$scales = [
-    function (ServerRequestInterface $request):Generator {
-        // delegate $request to the next request handler, i.e. $core
-        $response = yield $request;
+$scales = [];
 
-        // mofify the response
-        $response = $response->withHeader('content-type', 'application/json; charset=utf-8');
+$scales[] = function (ServerRequestInterface $request):\Generator {
+    // delegate $request to the next request handler, i.e. $core
+    $response = (yield $request);
 
-        return $response;
-    },
-    function (ServerRequestInterface $request):Generator {
-        // delegate $request to the next request handler, i.e. the middleware right above
-        $response = yield $request;
+    return $response->withHeader('content-type', 'application/json; charset=utf-8');
+};
 
-        // mofify the response
-        $response = $response->withHeader('X-PoweredBy', 'Unicorns');
+$scales[] = function (ServerRequestInterface $request):\Generator {
+    // delegate $request to the next request handler, i.e. the middleware right above
+    $response = (yield $request);
 
-        return $response;
-    },
-];
+    return $response->withHeader('X-PoweredBy', 'Unicorns');
+};
 
 // create an onion style middleware stack
 $middlewareStack = new Onion($core, ...$scales);
 
 // and process an incoming server request
-$response = $middlewareStack(new ServerRequest());
+$response = $middlewareStack(new \Zend\Diactoros\ServerRequest());
 ```
 
 
@@ -73,7 +65,7 @@ $response = $middlewareStack(new ServerRequest());
 public function __construct(callable $core, callable ...$scales)
 ```
 
-#### Inherited from `RequestHandlerInterface::__invoke`
+#### Inherited from [`RequestHandlerInterface::__invoke`](https://github.com/cormy/server-request-handler)
 
 ```php
 /**
@@ -90,8 +82,10 @@ public function __invoke(ServerRequestInterface $request):ResponseInterface
 ## Related
 
 * [Cormy\Server\Bamboo](https://github.com/cormy/bamboo) – Bamboo style PSR-7 **middleware pipe** using generators
+* [Cormy\Server\MiddlewareDispatcher](https://github.com/cormy/cormy/server-middleware-dispatcher) – Cormy PSR-7 server **middleware dispatcher**
 * [Cormy\Server\RequestHandlerInterface](https://github.com/cormy/server-request-handler) – Common interfaces for PSR-7 server request handlers
 * [Cormy\Server\MiddlewareInterface](https://github.com/cormy/server-middleware) – Common interfaces for Cormy PSR-7 server middlewares
+
 
 ## License
 

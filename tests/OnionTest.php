@@ -101,7 +101,7 @@ class OnionTest extends \PHPUnit_Framework_TestCase
         $middleware = function (ServerRequestInterface $request) {
             static $index = 0;
 
-            $response = yield $request;
+            $response = (yield $request);
             $response->getBody()->write((string) $index++);
 
             return $response;
@@ -122,7 +122,7 @@ class OnionTest extends \PHPUnit_Framework_TestCase
         $middlewares = [
             function (ServerRequestInterface $request) {
                 try {
-                    $response = yield $request;
+                    $response = (yield $request);
                 } catch (Exception $e) {
                     return new Response('Catched: '.$e->getMessage(), $e->getCode());
                 }
@@ -142,12 +142,12 @@ class OnionTest extends \PHPUnit_Framework_TestCase
         $finalHandler = new FinalHandler('Final!');
         $middlewares = [
             function (ServerRequestInterface $request) {
-                $response = yield $request;
+                $response = (yield $request);
                 throw new Exception('Oops, something went wrong!', 500);
             },
             function (ServerRequestInterface $request) {
                 try {
-                    $response = yield $request;
+                    $response = (yield $request);
                 } catch (Exception $e) {
                     return new Response('Catched: '.$e->getMessage(), $e->getCode());
                 }
@@ -169,7 +169,9 @@ class OnionTest extends \PHPUnit_Framework_TestCase
         };
         $middlewares = [
             function (ServerRequestInterface $request) {
-                return yield $request;
+                $response = (yield $request);
+
+                return $response;
             },
         ];
 
@@ -185,7 +187,7 @@ class OnionTest extends \PHPUnit_Framework_TestCase
         $finalHandler = new FinalHandler('Final!');
         $middlewares = [
             function (ServerRequestInterface $request) {
-                $response = yield $request;
+                $response = (yield $request);
                 throw new Exception('Oops, something went wrong!', 500);
             },
             function (ServerRequestInterface $request) {
