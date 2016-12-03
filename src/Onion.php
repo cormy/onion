@@ -17,7 +17,7 @@ class Onion implements RequestHandlerInterface
     protected $core;
 
     /**
-     * @var callable[]|MiddlewareInterface[]
+     * @var (callable|MiddlewareInterface)[]
      */
     protected $scales;
 
@@ -25,7 +25,7 @@ class Onion implements RequestHandlerInterface
      * Constructs an onion style PSR-7 middleware stack.
      *
      * @param callable|RequestHandlerInterface $core   the innermost request handler
-     * @param callable[]|MiddlewareInterface[] $scales the middlewares to wrap around the core
+     * @param (callable|MiddlewareInterface)[] $scales the middlewares to wrap around the core
      */
     public function __construct(callable $core, callable ...$scales)
     {
