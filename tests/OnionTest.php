@@ -80,6 +80,29 @@ class OnionTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('Final!0123', (string) $response->getBody());
     }
 
+    public function testRequestHandlersShouldBeValid()
+    {
+        $finalHandler = new FinalHandler('Final!');
+        $middlewares = [
+            new CounterMiddleware(0),
+            function (ServerRequest $request) {
+                return new Response('Abort by '.$request->getHeader('X-PoweredBy')[0].'!');
+            },
+            new CounterMiddleware(1),
+            function (ServerRequest $request) {
+                $response = (yield $request->withHeader('X-PoweredBy', 'Unicorns'));
+
+                return $response;
+            },
+        ];
+
+        $sut = new Onion($finalHandler, ...$middlewares);
+        $response = $sut(new ServerRequest());
+
+        $this->assertInstanceOf(ResponseInterface::class, $response);
+        $this->assertSame('Abort by Unicorns!1', (string) $response->getBody());
+    }
+
     public function testMultiDelegationMiddlewaresShouldBeValid()
     {
         $finalHandler = new FinalHandler('Final!');

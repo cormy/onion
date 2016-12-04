@@ -11,20 +11,20 @@ use Psr\Http\Message\ServerRequestInterface;
 class Onion implements RequestHandlerInterface
 {
     /**
-     * @var callable|RequestHandlerInterface
+     * @var RequestHandlerInterface|callable
      */
     protected $core;
 
     /**
-     * @var (callable|MiddlewareInterface)[]
+     * @var (MiddlewareInterface|RequestHandlerInterface|callable)[]
      */
     protected $scales;
 
     /**
      * Constructs an onion style PSR-7 middleware stack.
      *
-     * @param callable|RequestHandlerInterface $core   the innermost request handler
-     * @param (callable|MiddlewareInterface)[] $scales the middlewares to wrap around the core
+     * @param RequestHandlerInterface|callable                         $core   the innermost request handler
+     * @param (MiddlewareInterface|RequestHandlerInterface|callable)[] $scales the middlewares to wrap around the core
      */
     public function __construct(callable $core, callable ...$scales)
     {
@@ -57,6 +57,11 @@ class Onion implements RequestHandlerInterface
         }
 
         $current = $this->scales[$index]($request);
+
+        if ($current instanceof ResponseInterface) {
+            return $current;
+        }
+
         $nextIndex = $index - 1;
 
         while ($current->valid()) {
