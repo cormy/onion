@@ -2,7 +2,6 @@
 
 namespace Cormy\Server;
 
-use Throwable;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -66,7 +65,7 @@ class Onion implements RequestHandlerInterface
             try {
                 $nextResponse = $this->processMiddleware($nextIndex, $nextRequest);
                 $current->send($nextResponse);
-            } catch (Throwable $exception) {
+            } catch (\Throwable $exception) {
                 $current->throw($exception);
             }
         }
